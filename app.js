@@ -6,9 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose'); // Bring Mongoose into the app 
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
 
 // view engine setup
@@ -49,8 +46,12 @@ process.on('SIGINT', function() {
   }); 
 }); 
 
-app.use('/', routes);
-app.use('/users', users);
+// Routing
+var landing = require('./routes/index');
+var members = require('./routes/api/members');
+
+app.use('/', landing);
+app.use('/api/members', members);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
