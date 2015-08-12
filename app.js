@@ -52,6 +52,7 @@ var members = require('./routes/api/members');
 
 app.use('/', landing);
 app.use('/api/members', members);
+app.use('/docs', express.static('./public/swagger-ui/'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

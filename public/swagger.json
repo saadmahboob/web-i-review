@@ -1,0 +1,231 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "iReview DB API",
+        "description": "Under Construction",
+        "termsOfService": "To be created",
+        "contact": {
+            "name": "Sebastian Cheah",
+            "email": "foo@example.com",
+            "url": "http://swagger.io"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "http://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/api",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/members": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "description": "Finds all members in the database with optional query parameters",
+                "operationId": "whatisthis",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Filter by email (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "firstName",
+                        "in": "query",
+                        "description": "Filter by first name (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "lastName",
+                        "in": "query",
+                        "description": "Filter by last name (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "mobileNumber",
+                        "in": "query",
+                        "description": "Filter by mobile number",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "member response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/member"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Member"
+                ],
+                "description": "Add a new member",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Member to add to the store",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/member"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "invalid input"
+                    },
+                    "409": {
+                        "description": "Member with that email already exists"
+                    }
+                }
+            }
+        },
+        "/members/{email}": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "description": "Find member by email",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Email of member to fetch",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "member response",
+                        "schema": {
+                            "$ref": "#/definitions/member"
+                        }
+                    },
+                    "404": {
+                        "description": "member not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Member"
+                ],
+                "description": "Update an existing member",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Email of member to fetch",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Specify the fields to change, in JSON format. Only fields you want to change are necessary",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/member"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "member updated"
+                    },
+                    "404": {
+                        "description": "member not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Member"
+                ],
+                "description": "deletes a member based on the email supplied",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Email of pet to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "member deleted"
+                    },
+                    "404": {
+                        "description": "member not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "member": {
+            "required": [
+                "email",
+                "firstName",
+                "lastName",
+                "hashedPassword"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "mobileNumber": {
+                    "type": "string"
+                },
+                "hashedPassword": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
