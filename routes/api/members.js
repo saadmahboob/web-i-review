@@ -63,6 +63,13 @@ router.post('/', function(req, res) {
 });
 
 router.put('/:email', function(req, res) {
+  Member.findOne({ email: req.body.email }).exec(checkresponse);
+  function checkresponse(err, member) {
+    if(member) {
+      res.status(409).end();
+    }
+  }
+  
   var email = req.param('email');
 
   Member.findOne({ email: email }).exec(response);

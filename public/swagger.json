@@ -1,14 +1,14 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "1.0.0",
+        "version": "0.2.0",
         "title": "iReview DB API",
         "description": "Under Construction",
         "termsOfService": "To be created",
         "contact": {
             "name": "Sebastian Cheah",
-            "email": "foo@example.com",
-            "url": "http://swagger.io"
+            "email": "sebcheah@gmail.com",
+            "url": "https://github.com/scheah"
         },
         "license": {
             "name": "MIT",
@@ -33,7 +33,6 @@
                     "Member"
                 ],
                 "description": "Finds all members in the database with optional query parameters",
-                "operationId": "whatisthis",
                 "produces": [
                     "application/json"
                 ],
@@ -91,7 +90,7 @@
                     {
                         "name": "body",
                         "in": "body",
-                        "description": "Member to add to the store",
+                        "description": "Member to add",
                         "required": false,
                         "schema": {
                             "$ref": "#/definitions/member"
@@ -168,6 +167,9 @@
                     "404": {
                         "description": "member not found"
                     },
+                    "409": {
+                        "description": "new email already used by existing member"
+                    },
                     "500": {
                         "description": "an unexpected error occured"
                     }
@@ -182,7 +184,7 @@
                     {
                         "name": "email",
                         "in": "path",
-                        "description": "Email of pet to delete",
+                        "description": "Email of member to delete",
                         "required": true,
                         "type": "string"
                     }
@@ -193,6 +195,181 @@
                     },
                     "404": {
                         "description": "member not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "tags": [
+                    "Item"
+                ],
+                "description": "Finds all items in the database with optional query parameters",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendorName",
+                        "in": "query",
+                        "description": "Filter by vendor name (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "prodName",
+                        "in": "query",
+                        "description": "Filter by product name (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "SKU",
+                        "in": "query",
+                        "description": "Filter by SKU",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter by category",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "item response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/item"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Item"
+                ],
+                "description": "Add a new item",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Item to add",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/item"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "invalid input"
+                    },
+                    "409": {
+                        "description": "Item with the same SKU exists"
+                    }
+                }
+            }
+        },
+        "/items/{SKU}": {
+            "get": {
+                "tags": [
+                    "Item"
+                ],
+                "description": "Find item by SKU",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "SKU",
+                        "in": "path",
+                        "description": "SKU of item to fetch",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "item response",
+                        "schema": {
+                            "$ref": "#/definitions/item"
+                        }
+                    },
+                    "404": {
+                        "description": "item not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Item"
+                ],
+                "description": "Update an existing item",
+                "parameters": [
+                    {
+                        "name": "SKU",
+                        "in": "path",
+                        "description": "SKU of item to fetch",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Specify the fields to change, in JSON format. Only fields you want to change are necessary",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/item"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "item updated"
+                    },
+                    "404": {
+                        "description": "item not found"
+                    },
+                    "409": {
+                        "description": "new SKU already used by existing item"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Item"
+                ],
+                "description": "deletes an item based on the SKU supplied",
+                "parameters": [
+                    {
+                        "name": "SKU",
+                        "in": "path",
+                        "description": "SKU of item to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "item deleted"
+                    },
+                    "404": {
+                        "description": "item not found"
                     },
                     "500": {
                         "description": "an unexpected error occured"
@@ -224,6 +401,42 @@
                 },
                 "hashedPassword": {
                     "type": "string"
+                }
+            }
+        },
+        "item": {
+            "required": [
+                "vendorName",
+                "prodName",
+                "prodDesc",
+                "SKU",
+                "category",
+                "price"
+            ],
+            "properties": {
+                "vendorName": {
+                    "type": "string"
+                },
+                "prodName": {
+                    "type": "string"
+                },
+                "prodDesc": {
+                    "type": "string"
+                },
+                "SKU": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "numRatings": {
+                    "type": "number"
+                },
+                "avgRating": {
+                    "type": "number"
                 }
             }
         }

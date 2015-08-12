@@ -49,9 +49,13 @@ process.on('SIGINT', function() {
 // Routing
 var landing = require('./routes/index');
 var members = require('./routes/api/members');
+var items = require('./routes/api/items');
+var reviews = require('./routes/api/reviews');
 
 app.use('/', landing);
 app.use('/api/members', members);
+app.use('/api/items', items);
+app.use('/api/reviews', reviews);
 app.use('/docs', express.static('./public/swagger-ui/'));
 
 // catch 404 and forward to error handler
