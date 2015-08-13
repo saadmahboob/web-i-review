@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "0.2.0",
+        "version": "0.3.0",
         "title": "iReview DB API",
         "description": "Under Construction",
         "termsOfService": "To be created",
@@ -129,7 +129,10 @@
                     "200": {
                         "description": "member response",
                         "schema": {
-                            "$ref": "#/definitions/member"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/member"
+                            }
                         }
                     },
                     "404": {
@@ -376,6 +379,167 @@
                     }
                 }
             }
+        },
+        "/reviews": {
+            "get": {
+                "tags": [
+                    "Review"
+                ],
+                "description": "Finds all reviews in the database with optional query parameters",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "itemId",
+                        "in": "query",
+                        "description": "Filter by item ID (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "memberId",
+                        "in": "query",
+                        "description": "Filter by member ID (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "review response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/review"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Review"
+                ],
+                "description": "Add a new review",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "review to add",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/review"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "invalid input"
+                    },
+                    "409": {
+                        "description": "Review from that member regarding that item already exists"
+                    }
+                }
+            }
+        },
+        "/reviews/{id}": {
+            "get": {
+                "tags": [
+                    "Review"
+                ],
+                "description": "Find review by ObjectId",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of review to fetch",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "review response",
+                        "schema": {
+                            "$ref": "#/definitions/review"
+                        }
+                    },
+                    "404": {
+                        "description": "review not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Review"
+                ],
+                "description": "Update an existing review",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of review to fetch",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Specify the fields to change, in JSON format. Only fields you want to change are necessary",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/review"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "review updated"
+                    },
+                    "404": {
+                        "description": "review not found"
+                    },
+                    "409": {
+                        "description": "new review already exists for that item from that member"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Review"
+                ],
+                "description": "deletes a review based on the id supplied",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of review to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "review deleted"
+                    },
+                    "404": {
+                        "description": "review not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -436,6 +600,33 @@
                     "type": "number"
                 },
                 "avgRating": {
+                    "type": "number"
+                }
+            }
+        },
+        "review": {
+            "required": [
+                "itemId",
+                "memberId",
+                "rating"
+            ],
+            "properties": {
+                "itemId": {
+                    "type": "string"
+                },
+                "memberId": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "helpfulCount": {
+                    "type": "number"
+                },
+                "notHelpfulCount": {
                     "type": "number"
                 }
             }

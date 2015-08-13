@@ -31,7 +31,7 @@ router.get('/:id', function(req, res) {
 
 // POST Requests
 router.post('/', function(req, res) {
-  Review = new Review({
+  newReview = new Review({
     itemId:				req.body.itemId,
     memberId:   		req.body.memberId,
     rating:   			req.body.rating,
@@ -43,15 +43,24 @@ router.post('/', function(req, res) {
   if (req.body.hasOwnProperty('_id')) {
       Review._id = mongoose.Types.ObjectId.createFromHexString(String(req.body._id));
   }
-
-  Review.save(function(err, Review) {
-    if(err) {
-      res.status(400).end();
-    }
-    else {
-      res.json(Review);
-    }
-  });
+  
+  Review.findOne({ itemId: req.body.itemId, memberId: req.body.memberId }).exec(response);
+  
+  function response(err, review) {
+	if(review) {
+      res.status(409).end();		
+	}	  
+	else {
+	  newReview.save(function(err, newReview) {
+		if(err) {
+		  res.status(400).end();
+		}
+		else {
+		  res.json(newReview);
+		}
+	  });
+	}
+  }
 });
 
 // PUT Requests
