@@ -45,7 +45,7 @@ router.post('/', function(req, res) {
   if (req.body.hasOwnProperty('_id')) {
       item._id = mongoose.Types.ObjectId.createFromHexString(String(req.body._id));
   }
-  Item.findOne({ SKU: SKU }).exec(response);
+  Item.findOne({ SKU: req.body.SKU }).exec(response);
   function response(err, item) {
     if(item) {
       res.status(409).end();
