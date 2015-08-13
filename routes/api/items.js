@@ -71,7 +71,7 @@ router.put('/:SKU', function(req, res) {
       res.status(409).end();
     }
 	else {
-	  res.status(409).end();
+	  var SKU = req.param('SKU');
 	  Item.findOne({ SKU: SKU }).exec(response);
 	  function response(err, item) {
 		if(item) {
