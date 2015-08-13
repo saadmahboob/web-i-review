@@ -67,39 +67,40 @@ router.post('/', function(req, res) {
 router.put('/:SKU', function(req, res) {
   Item.findOne({ SKU: req.body.SKU }).exec(checkresponse);
   function checkresponse(err, item) {
-    if(item) {
+    if(req.body.SKU && item) {
       res.status(409).end();
     }
+	else {
+	  res.status(409).end();
+	  Item.findOne({ SKU: SKU }).exec(response);
+	  function response(err, item) {
+		if(item) {
+		  item.vendorName   = (req.body.vendorName || item.vendorName)
+		  item.prodName     = (req.body.prodName || item.prodName)
+		  item.prodDesc     = (req.body.prodDesc || item.prodDesc)
+		  item.SKU     		= (req.body.SKU || item.SKU)
+		  item.category     = (req.body.category || item.category)
+		  item.price        = (req.body.price || item.price)
+		  item.numRatings	= (req.body.numRatings || item.numRatings)
+		  item.avgRating	= (req.body.avgRating || item.avgRating)
+
+		  item.save(function (err) {
+			if(err) {
+			  res.status(500).end();
+			} 
+			else {
+			  res.status(200).end();
+			}
+		  });
+		}
+		else {
+		  res.status(404).end();
+		}
+	  }	  
+	}
   }
   
-  var id = req.param('id');
-
-  Item.findOne({ SKU: SKU }).exec(response);
-
-  function response(err, item) {
-    if(item) {
-      item.vendorName   = (req.body.vendorName || item.vendorName)
-      item.prodName     = (req.body.prodName || item.prodName)
-      item.prodDesc     = (req.body.prodDesc || item.prodDesc)
-	  item.SKU     		= (req.body.SKU || item.SKU)
-      item.category     = (req.body.category || item.category)
-      item.price        = (req.body.price || item.price)
-	  item.numRatings	= (req.body.numRatings || item.numRatings)
-	  item.avgRating	= (req.body.avgRating || item.avgRating)
-
-      item.save(function (err) {
-        if(err) {
-          res.status(500).end();
-        } 
-        else {
-          res.status(200).end();
-        }
-      });
-    }
-    else {
-      res.status(404).end();
-    }
-  }
+  
 });
 
 // DELETE Requests

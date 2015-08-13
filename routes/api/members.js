@@ -65,36 +65,37 @@ router.post('/', function(req, res) {
 router.put('/:email', function(req, res) {
   Member.findOne({ email: req.body.email }).exec(checkresponse);
   function checkresponse(err, member) {
-    if(member) {
+    if(req.body.email && member) {
       res.status(409).end();
     }
+	else {
+	  var email = req.param('email');
+	  Member.findOne({ email: email }).exec(response);
+	  function response(err, member) {
+		if(member) {
+		  member.email               = (req.body.email || member.email),
+		  member.firstName           = (req.body.firstName || member.firstName),
+		  member.lastName            = (req.body.lastName || member.lastName),
+		  member.mobileNumber        = (req.body.mobileNumber || member.mobileNumber),
+		  member.hashedPassword      = (req.body.hashedPassword || member.hashedPassword),
+
+		  member.save(function (err) {
+			if(err) {
+			  res.status(500).end();
+			} 
+			else {
+			  res.status(200).end();
+			}
+		  });
+		}
+		else {
+		  res.status(404).end();
+		}
+	  }
+	}
   }
   
-  var email = req.param('email');
-
-  Member.findOne({ email: email }).exec(response);
-
-  function response(err, member) {
-    if(member) {
-      member.email               = (req.body.email || member.email),
-      member.firstName           = (req.body.firstName || member.firstName),
-      member.lastName            = (req.body.lastName || member.lastName),
-      member.mobileNumber        = (req.body.mobileNumber || member.mobileNumber),
-      member.hashedPassword      = (req.body.hashedPassword || member.hashedPassword),
-
-      member.save(function (err) {
-        if(err) {
-          res.status(500).end();
-        } 
-        else {
-          res.status(200).end();
-        }
-      });
-    }
-    else {
-      res.status(404).end();
-    }
-  }
+  
 });
 
 router.delete('/:email', function(req, res) {
