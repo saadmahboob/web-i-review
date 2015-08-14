@@ -51,11 +51,15 @@ var landing = require('./routes/index');
 var members = require('./routes/api/members');
 var items = require('./routes/api/items');
 var reviews = require('./routes/api/reviews');
+var posts = require('./routes/api/posts');
+var comments = require('./routes/api/comments');
 
 app.use('/', landing);
 app.use('/api/members', members);
 app.use('/api/items', items);
 app.use('/api/reviews', reviews);
+app.use('/api/posts', posts);
+//app.use('/api/comments', comments);
 app.use('/docs', express.static('./public/swagger-ui/'));
 
 // catch 404 and forward to error handler

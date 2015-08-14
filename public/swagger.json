@@ -540,6 +540,154 @@
                     }
                 }
             }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "description": "Finds all posts in the database with optional query parameters",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "author",
+                        "in": "query",
+                        "description": "Filter by author id (case-sensitive)",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "post response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/post"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Post"
+                ],
+                "description": "Add a new post",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "post to add",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/post"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "invalid input"
+                    }
+                }
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "description": "Find post by ObjectId",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of post to fetch",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "post response",
+                        "schema": {
+                            "$ref": "#/definitions/post"
+                        }
+                    },
+                    "404": {
+                        "description": "post not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Post"
+                ],
+                "description": "Update an existing post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of post to fetch",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Specify the fields to change, in JSON format. Only fields you want to change are necessary",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/post"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "post updated"
+                    },
+                    "404": {
+                        "description": "post not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Post"
+                ],
+                "description": "deletes a post based on the id supplied",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id of post to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "post deleted"
+                    },
+                    "404": {
+                        "description": "post not found"
+                    },
+                    "500": {
+                        "description": "an unexpected error occured"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -628,6 +776,48 @@
                 },
                 "notHelpfulCount": {
                     "type": "number"
+                }
+            }
+        },
+        "post": {
+            "required": [
+                "subject",
+                "body",
+                "tags",
+                "author"
+            ],
+            "properties": {
+                "subject": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "author": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "modified": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }
