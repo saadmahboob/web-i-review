@@ -1,0 +1,47 @@
+html
+	head
+		title=title
+		link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+	body
+		div.container
+			div.page-header
+				h1 Member Registration
+			if errors
+				each error in errors
+					div.alert.alert-danger
+						span #{error.error}
+			form.login-form.form-horizontal(method='post', role='form')
+				div.form-group
+					label.col-sm-4 E-mail Address
+					div.col-sm-8
+						input.form-control(
+							placeholder='user@mydomain.com',
+							required=true,
+							name='emailAddr',
+							type='email',
+							value=emailAddr)				
+				div.form-group
+					label.col-sm-4 First Name
+					div.col-sm-8
+						input.form-control(
+							placeholder='John',
+							required=true,
+							name='firstName',
+							type='text',
+							value=firstName)
+				div.form-group
+					label.col-sm-4 Last Name
+					div.col-sm-8
+						input.form-control(
+							placeholder='Smith',
+							required=true,
+							name='lastName',
+							type='text',
+							value=lastName)
+				div.form-group
+					div.col-sm-offset-4.col-sm-8
+						button.login.btn.btn-primary(type='submit') Submit
+				div.pull-right
+					a(href="/") Return to home page
+
+
