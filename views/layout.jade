@@ -1,7 +1,19 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+	body
+		div(class="navbar navbar-default")
+			if errors
+				each error in errors
+					alert.alert-danger
+						span #{error.error}
+			form.navbar-form.pull-right(method='post', role='form')
+				.form-group
+					input.form-control(required=true, type="email", placeholder="Email")
+				.form-group
+					input.form-control(required=true, type="password", placeholder="Password")
+				.form-group
+					button.login.btn.btn-primary(type="submit", href="/login") Login
+		block content
