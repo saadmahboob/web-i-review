@@ -120,7 +120,7 @@ router.delete('/:email', function(req, res) {
   }
 });
 
-router.authenticate = function(username, password, done) {
+router.localAuthenticate = function(username, password, done) {
 	console.log(username+"//"+password+" is trying to login as local.");
 	Member.findOne( {email: username} ).exec(response);
 	function response(err, member){
@@ -136,6 +136,35 @@ router.authenticate = function(username, password, done) {
 			return done(null, false, { message: 'Incorrect password' });
 		}
 		return done(null, member);
+	}
+}
+
+router.localRegistration = function(req, username, password, done) {
+	console.log(username+"//"+password+" is trying to register as local.");
+	newMember = new Member({
+		email:                username,
+		firstName:            req.body.firstName,
+		lastName:             req.body.lastName,
+		hashedPassword:       password
+	});
+	Member.findOne({ email: username }).exec(response);
+	function response(err, member) {
+		if (err) {
+			console.log(err.stack);
+		}
+		else if(member) {
+			return done(null, false, { message: username + ' is already registered' })
+		}
+		else {
+			newMember.save(function(err, newMember) {
+				if(err) {
+					return done(null, false, { message: 'Internal error has occured' })
+				}
+				else {
+					return done(null, newMember);
+				}
+			});
+		}
 	}
 }
 

@@ -10,14 +10,29 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res) {
-    res.render('login', { userNavLoginOff: 'true' });
+    res.render('login', { userNavLoginOff: 'true', message: res.locals.message });
 });
 
-router.post('/login', passport.authenticate('local-signin', { 
-  successRedirect: '/',
-  failureRedirect: '/login'
-  })
-);
+router.post('/login', function(req, res, next) {
+	passport.authenticate('local-signin', function(err, user, info) {
+		if (err) { 
+			return next(err); 
+		}
+		if (!user) {
+			req.session.message = info.message;
+			return res.redirect('/login');
+		}
+		req.logIn(user, function(err) {
+			if (err) { 
+				return next(err); 
+			}
+			else {
+				return res.redirect('/');
+				
+			}
+		});
+	})(req, res, next);
+});
 
 router.get('/logout', function(req, res) {
 	req.logout();
@@ -25,28 +40,29 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/register', function(req, res) {
-    res.render('register', { userNavLoginOff: 'true' });
+    res.render('register', { userNavLoginOff: 'true', message: res.locals.message });
 });
 
-router.post('/register', function(req, res) {
-	var formData = {
-		email: 				req.body.emailAddr,
-		hashedPassword:		req.body.pass,
-		firstName:			req.body.firstName,
-		lastName:			req.body.lastName
-	};
-	request.post({url:'http://localhost:3000/api/members', form: formData}, callback)
-	function callback (error, httpResponse, body) { 
-		if (error) {
-			res.render('error', {message: err.message, error: error});
+router.post('/register', function(req, res, next) {
+	passport.authenticate('local-signup', function(err, user, info) {
+		if (err) { 
+			return next(err); 
 		}
-		else if (httpResponse.statusCode == 200) {
-			res.redirect('/');
+		else if (!user) {
+			req.session.message = info.message;
+			return res.redirect('/register');
 		}
-		else { //TODO expand else statements for specific error codes, and change user error handling
-			res.render('register', {message: 'An error occured: ' + httpResponse.statusCode});
+		else {
+			req.logIn(user, function(err) {
+				if (err) { 
+					return next(err); 
+				}
+				else {
+					return res.redirect('/');
+				}
+			});
 		}
-	}
+	})(req, res, next);
 });
 
 module.exports = router;

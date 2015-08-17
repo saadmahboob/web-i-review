@@ -25,6 +25,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: 'supermassive blackhole sun', saveUninitialized: false, resave: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+// Session-persisted message middleware
+app.use(function(req, res, next){
+  var err = req.session.error,
+      msg = req.session.message,
+      success = req.session.success;
+  delete req.session.error;
+  delete req.session.message;
+  delete req.session.success;
+  if (err) res.locals.error = err;
+  if (msg) res.locals.message = msg;
+  if (success) res.locals.success = success;
+
+  next();
+});
 
 var local_database_name = 'ireview';
 var local_database_uri  = 'mongodb://localhost/' + local_database_name; // Build the connection string 
@@ -57,14 +74,10 @@ ensureAuthenticated = function(req, res, next) {
 	return next();
   }
   else {
-	req.session.error = 'Please sign in!'; 
+	req.session.message = 'You must be logged in to continue'; 
     res.redirect('/login'); 
   }
 } 
-app.use(session({secret: 'supermassive blackhole sun', saveUninitialized: false, resave: false}));
-app.use(passport.initialize());
-app.use(passport.session());
-
 
 // Routing
 var landing = require('./routes/index');
@@ -75,7 +88,8 @@ var posts = require('./routes/api/posts');
 var comments = require('./routes/api/comments');
 
 // Session Passport Authentication
-passport.use( 'local-signin', new LocalStrategy( {usernameField: 'email', passwordField: 'password'}, members.authenticate ) );
+passport.use( 'local-signin', new LocalStrategy( {usernameField: 'email', passwordField: 'password'}, members.localAuthenticate ) );
+passport.use( 'local-signup', new LocalStrategy( {usernameField: 'email', passwordField: 'password', passReqToCallback : true}, members.localRegistration ) );
 passport.serializeUser(members.serializeUser);
 passport.deserializeUser(members.deserializeUser);
 

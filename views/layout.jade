@@ -5,6 +5,8 @@ html
 		link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
 	body
 		div(class="navbar navbar-default")
+			if message
+				span #{message}
 			if userNavLoginOff
 				span &nbsp
 			else if user
