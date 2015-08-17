@@ -16,6 +16,9 @@
     "stylus": "0.42.3",
 	"mongodb": "*",
 	"mongoose": "*",
-	"request": "*"
+	"request": "*",
+	"passport": "*",
+	"passport-local": "*",
+	"express-session": "*"
   }
 }

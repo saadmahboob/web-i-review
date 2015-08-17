@@ -2,18 +2,30 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 var Member = require('../models/member');
+var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('home', { title: 'Testing!' });
+	res.render('home', { title: 'Testing!', user: req.user});
 });
 
 router.get('/login', function(req, res) {
-    res.render('login', { });
+    res.render('login', { userNavLoginOff: 'true' });
+});
+
+router.post('/login', passport.authenticate('local-signin', { 
+  successRedirect: '/',
+  failureRedirect: '/login'
+  })
+);
+
+router.get('/logout', function(req, res) {
+	req.logout();
+    res.redirect('/');
 });
 
 router.get('/register', function(req, res) {
-    res.render('register', { });
+    res.render('register', { userNavLoginOff: 'true' });
 });
 
 router.post('/register', function(req, res) {

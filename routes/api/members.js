@@ -120,4 +120,33 @@ router.delete('/:email', function(req, res) {
   }
 });
 
+router.authenticate = function(username, password, done) {
+	console.log(username+"//"+password+" is trying to login as local.");
+	Member.findOne( {email: username} ).exec(response);
+	function response(err, member){
+		if(err) {
+			console.log(err.stack);
+		}
+		else if(!member){
+			console.log("member not found.");
+			return done(null, false, { message: 'Unknown user ' + username });
+		}
+		else if (password !== member.hashedPassword) {
+			console.log("Password does not match");
+			return done(null, false, { message: 'Incorrect password' });
+		}
+		return done(null, member);
+	}
+}
+
+router.serializeUser = function(user, done) {
+	console.log("serializing " + user.email);
+	done(null, user);
+}
+
+router.deserializeUser = function(obj, done) {
+	console.log("deserializing " + obj.email);
+	done(null, obj);
+}
+
 module.exports = router;

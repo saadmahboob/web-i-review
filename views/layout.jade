@@ -5,15 +5,23 @@ html
 		link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
 	body
 		div(class="navbar navbar-default")
-			if errors
-				each error in errors
-					alert.alert-danger
-						span #{error.error}
-			form.navbar-form.pull-right(method='post', role='form')
-				.form-group
-					input.form-control(required=true, type="email", placeholder="Email")
-				.form-group
-					input.form-control(required=true, type="password", placeholder="Password")
-				.form-group
-					button.login.btn.btn-primary(type="submit", href="/login") Login
+			if userNavLoginOff
+				span &nbsp
+			else if user
+				span.pull-right
+					span Welcome, #{user.firstName}
+					span &nbsp
+					a.btn.btn-primary(href="/logout") Logout
+			else
+				if errors
+					each error in errors
+						alert.alert-danger
+							span #{error.error}
+				form.navbar-form.pull-right(action='/login', method='post', role='form')
+					span.form-group
+						input.form-control(required=true, type="email", placeholder="Email", name="email")
+					span.form-group
+						input.form-control(required=true, type="password", placeholder="Password", name="password")
+					span.form-group
+						button.login.btn.btn-primary(type="submit") Login
 		block content

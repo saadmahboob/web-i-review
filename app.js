@@ -4,7 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose'); // Bring Mongoose into the app 
+// MongoDB object modeling
+var mongoose = require('mongoose'); 
+// Session and Authentication
+var session = require('express-session');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 
@@ -46,6 +51,21 @@ process.on('SIGINT', function() {
   }); 
 }); 
 
+// Simple route middleware to ensure user is authenticated. 
+ensureAuthenticated = function(req, res, next) { 
+  if (req.isAuthenticated()) { 
+	return next();
+  }
+  else {
+	req.session.error = 'Please sign in!'; 
+    res.redirect('/login'); 
+  }
+} 
+app.use(session({secret: 'supermassive blackhole sun', saveUninitialized: false, resave: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 // Routing
 var landing = require('./routes/index');
 var members = require('./routes/api/members');
@@ -53,6 +73,11 @@ var items = require('./routes/api/items');
 var reviews = require('./routes/api/reviews');
 var posts = require('./routes/api/posts');
 var comments = require('./routes/api/comments');
+
+// Session Passport Authentication
+passport.use( 'local-signin', new LocalStrategy( {usernameField: 'email', passwordField: 'password'}, members.authenticate ) );
+passport.serializeUser(members.serializeUser);
+passport.deserializeUser(members.deserializeUser);
 
 app.use('/', landing);
 app.use('/api/members', members);
