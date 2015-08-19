@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
 var Member = require('../../models/member');
+var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
 
 router.get('/', function(req, res) {
   var filter = req.query;
@@ -126,46 +128,70 @@ router.localAuthenticate = function(username, password, done) {
 	function response(err, member){
 		if(err) {
 			console.log(err.stack);
+			return done(null, false, { message: 'Internal Server Error' });
 		}
 		else if(!member){
 			console.log("member not found.");
 			return done(null, false, { message: 'Unknown user ' + username });
 		}
-		else if (password !== member.hashedPassword) {
-			console.log("Password does not match");
-			return done(null, false, { message: 'Incorrect password' });
+		else {
+			bcrypt.compare(password, member.hashedPassword, function(err, res) {
+				if (res == false) {
+					console.log("Password does not match");
+					return done(null, false, { message: 'Incorrect password' });
+				}
+				else {
+					return done(null, member);
+				}
+			});
 		}
-		return done(null, member);
 	}
 }
 
 router.localRegistration = function(req, username, password, done) {
 	console.log(username+"//"+password+" is trying to register as local.");
-	newMember = new Member({
-		email:                username,
-		firstName:            req.body.firstName,
-		lastName:             req.body.lastName,
-		hashedPassword:       password
-	});
-	Member.findOne({ email: username }).exec(response);
-	function response(err, member) {
-		if (err) {
+	bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+		if(err) {
 			console.log(err.stack);
-		}
-		else if(member) {
-			return done(null, false, { message: username + ' is already registered' })
+			return done(null, false, { message: 'bcrypt salt failure' });
 		}
 		else {
-			newMember.save(function(err, newMember) {
+			bcrypt.hash(password, salt, function(err, hash) {
 				if(err) {
-					return done(null, false, { message: 'Internal error has occured' })
+					console.log(err.stack);
+					return done(null, false, { message: 'bcrypt hash failure' });
 				}
 				else {
-					return done(null, newMember);
+					newMember = new Member({
+						email:                username,
+						firstName:            req.body.firstName,
+						lastName:             req.body.lastName,
+						hashedPassword:       hash
+					});
+					Member.findOne({ email: username }).exec(response);
+					function response(err, member) {
+						if (err) {
+							console.log(err.stack);
+							return done(null, false, { message: 'Internal server error has occured' });
+						}
+						else if(member) {
+							return done(null, false, { message: username + ' is already registered' });
+						}
+						else {
+							newMember.save(function(err, newMember) {
+								if(err) {
+									return done(null, false, { message: 'Internal error has occured' });
+								}
+								else {
+									return done(null, newMember);
+								}
+							});
+						}
+					}
 				}
 			});
 		}
-	}
+	});
 }
 
 router.serializeUser = function(user, done) {

@@ -19,6 +19,7 @@
 	"request": "*",
 	"passport": "*",
 	"passport-local": "*",
-	"express-session": "*"
+	"express-session": "*",
+	"bcrypt": "*"
   }
 }
